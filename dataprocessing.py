@@ -9,9 +9,9 @@ data = pd.read_csv('data/adult.data')
 
 def data_processing(data):
     data = np.array(data)
-    x = data[:,0]
+    X = data[:,:-1]
     y = data[:,-1]
-    
-    return x,y
+    return X,y
 
-x,y = data_processing(data)
+X,y = data_processing(data)
+print(X.shape)
