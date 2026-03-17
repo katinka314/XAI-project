@@ -2,3 +2,4 @@
 /.venv-windows/
 /.venv-linux/
 /.vscode/
+/venv/
