@@ -5,14 +5,15 @@ from src.data_transformation import (
     numeric_cols,
     split_X_y,
 )
-from src.DataScientist.plots import plot_confusion_matrix, plot_fairness
 from src.DataScientist.plots import (
+    plot_confusion_matrix,
     plot_decision_tree,
+    plot_fairness,
     plot_lime_explanation,
     plot_logistic_coefficients,
     plot_shap_summary,
 )
-from src.model_factory import model_dt, model_lr, fit_and_score
+from src.model_factory import fit_and_score, model_dt, model_lr
 
 data = load_adult_data(data_path='data/adult.data', nrows=None)
 X, y = split_X_y(data)
