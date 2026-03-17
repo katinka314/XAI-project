@@ -60,6 +60,8 @@ Within the top we would like User: <name>. In the row underneath each user, thei
 
 ## Revision rules
 Ask questions iteratively, until you have sufficient information to give the correct output.
+In each iteration, formulate at most 3 concrete questions that I should answer. 
+You are allowed to come up with a suggestion for the missing information (even though the information was not explicitly specified)
 If changes are specified, only change what is specified, and keep the rest the same.
 Accept corrections or new instructions.
 After each iteration give the overview of what the user story map looks like, and what information is still lacking.
