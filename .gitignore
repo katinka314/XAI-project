@@ -1,1 +1,3 @@
 /pyproject.toml
+/.venv-windows/
+/.venv-linux/
