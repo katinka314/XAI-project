@@ -3,3 +3,9 @@
 /.venv-linux/
 /.vscode/
 /venv/
+.DS_Store
+uv.lock
+.venv
+*.png
+src/__pycache__
+soren
