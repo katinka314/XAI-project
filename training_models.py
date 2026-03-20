@@ -1,3 +1,4 @@
+# %%
 from src.data_transformation import (
     categorical_cols,
     create_train_test_split,
@@ -15,6 +16,7 @@ from src.DataScientist.plots import (
 )
 from src.model_factory import fit_and_score, model_dt, model_lr
 
+# %%
 data = load_adult_data(data_path='data/adult.data', nrows=None)
 X, y = split_X_y(data)
 X_train, X_test, y_train, y_test = create_train_test_split(X, y, test_size=0.2, random_state=42)
@@ -29,7 +31,7 @@ print(f'Decision Tree Accuracy: {dt_score:.4f}')
 print(f'Logistic Regression Accuracy: {lr_score:.4f}')
 
 
-
+# %%
 
 plot_decision_tree(dt_model, output_path='tree.png')
 plot_logistic_coefficients(lr_model, top_k=20, output_path='logreg.png')
@@ -40,7 +42,7 @@ plot_shap_summary(lr_model, X_train, 'Logistic Regression')
 plot_lime_explanation(dt_model, X_train, X_test, 'Decision Tree')
 plot_lime_explanation(lr_model, X_train, X_test, 'Logistic Regression')
 
-
+# %%
 plot_shap_summary(dt_model, X_train, 'Decision Tree', dir_path = "src/Director/", features=6, pretty_names = {
     "cat__marital-status_ Married-civ-spouse": "Married",
     "num__education-num": "Education Level",
