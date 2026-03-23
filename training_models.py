@@ -1,4 +1,9 @@
 # %%
+import os
+os.makedirs("src/DataScientist", exist_ok=True)
+os.makedirs("src/Director", exist_ok=True)
+os.makedirs("src/EndUser", exist_ok=True)
+
 from src.data_transformation import (
     categorical_cols,
     create_train_test_split,
@@ -13,6 +18,12 @@ from src.DataScientist.plots import (
     plot_lime_explanation,
     plot_logistic_coefficients,
     plot_shap_summary,
+    plot_class_distribution,
+    plot_roc_curve,
+    plot_feature_distribution,
+    plot_bias_report,
+    plot_business_error_summary,
+    plot_confusion_matrix_pct
 )
 from src.model_factory import fit_and_score, model_dt, model_lr
 
@@ -37,10 +48,13 @@ plot_decision_tree(dt_model, output_path='tree.png')
 plot_logistic_coefficients(lr_model, top_k=20, output_path='logreg.png')
 plot_confusion_matrix(dt_model, X_test, y_test, 'Decision Tree')
 plot_confusion_matrix(lr_model, X_test, y_test, 'Logistic Regression')
-plot_shap_summary(dt_model, X_train, 'Decision Tree', log_scale = False)
-plot_shap_summary(lr_model, X_train, 'Logistic Regression')
-plot_lime_explanation(dt_model, X_train, X_test, 'Decision Tree')
-plot_lime_explanation(lr_model, X_train, X_test, 'Logistic Regression')
+plot_shap_summary(dt_model, X_train, 'Decision Tree', log_scale=False)
+plot_shap_summary(lr_model, X_train, 'Logistic Regression', log_scale=False)
+misclassified_dt_idx = int((dt_model.predict(X_test) != y_test.values).argmax())
+plot_lime_explanation(dt_model, X_train, X_test, 'Decision Tree', instance_idx=misclassified_dt_idx)
+
+misclassified_lr_idx = int((lr_model.predict(X_test) != y_test.values).argmax())
+plot_lime_explanation(lr_model, X_train, X_test, 'Logistic Regression', instance_idx=misclassified_lr_idx)
 
 # %%
 plot_shap_summary(dt_model, X_train, 'Decision Tree', dir_path = "src/Director/", features=6, pretty_names = {
@@ -71,8 +85,21 @@ plot_fairness(dt_model, X_test, y_test, X_test_original = X_test, category = "ra
 plot_fairness(lr_model, X_test, y_test, X_test_original = X_test, category = "race", model_name = "Logistic Regression",
               dir_path = "src/Director/")
 
+plot_fairness(dt_model, X_test, y_test, X_test_original = X_test, category = "sex", model_name = "Decision Tree",
+              dir_path = "src/DataScientist/")
+plot_fairness(lr_model, X_test, y_test, X_test_original = X_test, category = "sex", model_name = "Logistic Regression", dir_path = \
+    "src/DataScientist/")
 
-plot_lime_explanation(dt_model, X_train, X_test, 'Decision Tree', instance_idx=0, num_features=6, dir_path =
+plot_fairness(dt_model, X_test, y_test, X_test_original = X_test, category = "race", model_name = "Decision Tree",
+              dir_path = "src/DataScientist/")
+
+plot_fairness(lr_model, X_test, y_test, X_test_original = X_test, category = "race", model_name = "Logistic Regression",
+              dir_path = "src/DataScientist/")
+
+
+rejected_idx = int((y_test.reset_index(drop=True) == ' <=50K').idxmax())
+
+plot_lime_explanation(dt_model, X_train, X_test, 'Decision Tree', instance_idx=rejected_idx, num_features=6, dir_path=
 "src/EndUser/", features_hidden = ['age', 'sex', 'race', 'native-country', 'fnlwgt',
                                    'cat__relationship_infrequent_sklearn'],
                       pretty_names = {
@@ -88,7 +115,7 @@ plot_lime_explanation(dt_model, X_train, X_test, 'Decision Tree', instance_idx=0
     'cat__relationship_ Not-in-family': 'Not in Family',
 })
 
-plot_lime_explanation(lr_model, X_train, X_test, 'Logistic Regression', instance_idx=0, num_features=7, dir_path =
+plot_lime_explanation(lr_model, X_train, X_test, 'Logistic Regression', instance_idx=rejected_idx, num_features=7, dir_path =
 "src/EndUser/", features_hidden = ['age', 'sex', 'race', 'native-country', 'fnlwgt',
                                    'cat__relationship_infrequent_sklearn'], pretty_names = {
     'num__capital-gain': 'Investment Income',
@@ -103,3 +130,20 @@ plot_lime_explanation(lr_model, X_train, X_test, 'Logistic Regression', instance
     'cat__relationship_ Not-in-family': 'Not in Family',
     'cat__education_ Some-college': 'Went to College',
 })
+
+plot_class_distribution(y_train, dir_path = "src/DataScientist")
+
+plot_roc_curve({"Decision Tree": dt_model, "Logistic Regression": lr_model}, X_test, y_test, dir_path = "src/DataScientist/")
+
+plot_feature_distribution(X_train = X_train, categorical = categorical_cols, numerical = numeric_cols, dir_path = "src/DataScientist/")
+
+
+plot_bias_report(dt_model, X_test, y_test, X_test, category='sex', model_name='Decision Tree')
+plot_bias_report(lr_model, X_test, y_test, X_test, category='sex', model_name='Logistic Regression')
+plot_bias_report(dt_model, X_test, y_test, X_test, category='race', model_name='Decision Tree')
+plot_bias_report(lr_model, X_test, y_test, X_test, category='race', model_name='Logistic Regression')
+
+plot_business_error_summary({"Decision Tree": dt_model, "Logistic Regression": lr_model}, X_test, y_test, dir_path = "src/Director/")
+
+plot_confusion_matrix_pct(dt_model, X_test, y_test, 'Decision Tree', dir_path = "src/DataScientist/")
+plot_confusion_matrix_pct(lr_model, X_test, y_test, 'Logistic Regression', dir_path = "src/DataScientist/")

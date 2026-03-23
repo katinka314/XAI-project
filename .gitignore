@@ -8,6 +8,9 @@ pyproject.toml
 *.png
 __pycache__
 soren
+src/DataScientist/
+src/Director/
+src/EndUser/
 
 
 *.png
