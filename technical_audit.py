@@ -43,26 +43,22 @@ def plot_tsne_decision_boundary(prep, clf, X, y, n_samples=200, random_state=42)
     if hasattr(X_transformed, "toarray"):
         X_transformed = X_transformed.toarray()
 
-    # Decision function (latent representation)
-    logits = lr.decision_function(X_transformed)
-
-    # t-SNE (must use random init for 1D inputs)
     tsne = TSNE(
         n_components=2,
         random_state=random_state,
-        init="random",
+        init="pca",
         learning_rate="auto",
         perplexity=min(30, n_samples - 1)
     )
 
-    X_tsne = tsne.fit_transform(logits.reshape(-1, 1))
+    X_tsne = tsne.fit_transform(X_transformed)
 
     # Plot
     plt.figure(figsize=(8, 6))
     scatter = plt.scatter(
         X_tsne[:, 0],
         X_tsne[:, 1],
-        c=(y_sample == ">50K").astype(int),
+        c=(y_sample.str.strip() == ">50K").astype(int),
         cmap="coolwarm",
         alpha=0.7
     )
