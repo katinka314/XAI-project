@@ -1,43 +1,142 @@
-from model_factory import model_dt, model_lr
+# ============================================
+# Logistic Regression – Advanced Model Analysis
+# Concept-Based Explanations + Latent Space t-SNE
+# ============================================
 
+import os
 import numpy as np
-from tqdm.notebook import tqdm
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision.datasets as datasets
-from torch.utils.data import DataLoader
-import torchvision.transforms as transforms
-from sklearn.manifold import TSNE
+import pandas as pd
 import matplotlib.pyplot as plt
 
-if torch.cuda.is_available():
-    print("The code will run on GPU.")
-else:
-    print("The code will run on CPU. Go to Edit->Notebook Settings and choose GPU as the hardware accelerator")
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+from sklearn.manifold import TSNE
 
-test_loader_vis = DataLoader(testset, batch_size=10000, shuffle=False, num_workers=1)
-test_correct = 0
-for data, target in test_loader_vis:
-    data = data.to(device)
-    with torch.no_grad():
-        output, features = model(data)
+from training_models import model_lr
+from src.data_transformation import (
+    categorical_cols,
+    numeric_cols,
+    create_train_test_split,
+    load_adult_data,
+    split_X_y,
+)
 
+# --------------------------------------------
+# Create output directories
+# --------------------------------------------
+os.makedirs("src/DataScientist", exist_ok=True)
+os.makedirs("src/Director", exist_ok=True)
+os.makedirs("src/EndUser", exist_ok=True)
 
-features_embedded_0 = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(features[0].cpu())
-features_embedded_1 = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(features[1].cpu())
-features_embedded_2 = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(features[2].cpu())
-features_embedded_3 = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(features[3].cpu())
+# --------------------------------------------
+# Load and split data
+# --------------------------------------------
+df = load_adult_data()
+X, y = split_X_y(df)
+X_train, X_test, y_train, y_test = create_train_test_split(X, y)
 
+# --------------------------------------------
+# Train Logistic Regression
+# --------------------------------------------
+lr_model = model_lr(categorical_cols, numeric_cols)
+lr_model.fit(X_train, y_train)
 
+# --------------------------------------------
+# ========= CONCEPT-BASED EXPLANATION =========
+# --------------------------------------------
 
-plt.rcParams["figure.figsize"] = (20,5)
+# Define human-interpretable concepts
+concepts = {
+    "Demographic": ["age", "sex", "race"],
+    "Education": ["education", "education-num"],
+    "Work": ["hours-per-week", "occupation", "workclass"],
+    "Capital": ["capital-gain", "capital-loss"],
+}
 
-fig, ax = plt.subplots(1, 4)
-ax[0].scatter(features_embedded_0[:,0], features_embedded_0[:,1], c=target)
-ax[1].scatter(features_embedded_1[:,0], features_embedded_1[:,1], c=target)
-ax[2].scatter(features_embedded_2[:,0], features_embedded_2[:,1], c=target)
-im = ax[3].scatter(features_embedded_3[:,0], features_embedded_3[:,1], c=target)
+# Extract trained components
+prep = lr_model.named_steps["prep"]
+clf = lr_model.named_steps["clf"]
 
-plt.colorbar(im)
+# Get feature names after preprocessing
+feature_names = prep.get_feature_names_out()
+
+# Create coefficient series
+coef_df = pd.Series(
+    clf.coef_[0],
+    index=feature_names
+)
+
+# Compute concept influence
+concept_influence = {}
+
+for concept, raw_features in concepts.items():
+    matching_features = [
+        f for f in coef_df.index
+        if any(rf in f for rf in raw_features)
+    ]
+    concept_influence[concept] = coef_df[matching_features].abs().sum()
+
+concept_influence = (
+    pd.Series(concept_influence)
+    .sort_values(ascending=False)
+)
+
+print("\nConcept influence (logistic regression):")
+print(concept_influence)
+
+# Save for audit / reporting
+concept_influence.to_csv("src/DataScientist/lr_concept_influence.csv")
+
+# --------------------------------------------
+# ========= LATENT SPACE VISUALIZATION =========
+# --------------------------------------------
+
+# Subsample for t-SNE
+sample = X_test.sample(n=2000, random_state=42)
+sample_idx = sample.index
+X_sample = X_test.loc[sample_idx]
+y_sample = y_test.loc[sample_idx]
+
+# Transform features
+X_sample_transformed = prep.transform(X_sample)
+if hasattr(X_sample_transformed, "toarray"):
+    X_sample_transformed = X_sample_transformed.toarray()
+
+# Decision function = latent representation
+logits = clf.decision_function(X_sample_transformed)
+
+# Apply t-SNE
+tsne = TSNE(
+    n_components=2,
+    random_state=42,
+    learning_rate="auto",
+    init="pca",
+    perplexity=30
+)
+
+X_tsne = tsne.fit_transform(logits.reshape(-1, 1))
+
+# Encode labels for coloring
+y_colors = (y_sample == ">50K").astype(int)
+
+# Plot
+plt.figure(figsize=(8, 6))
+plt.scatter(
+    X_tsne[:, 0],
+    X_tsne[:, 1],
+    c=y_colors,
+    cmap="coolwarm",
+    s=12,
+    alpha=0.7
+)
+plt.title("t-SNE of Logistic Regression Latent Space")
+plt.xlabel("t-SNE 1")
+plt.ylabel("t-SNE 2")
+plt.colorbar(label="Income class")
+plt.tight_layout()
+
+# Save figure
+plt.savefig("src/DataScientist/lr_tsne.png")
+plt.close()
+
+print("\nSaved outputs:")
+print("- src/DataScientist/lr_concept_influence.csv")
+print("- src/DataScientist/lr_tsne.png")
