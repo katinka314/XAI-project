@@ -41,7 +41,8 @@ print(f'Logistic Regression Accuracy: {lr_score:.4f}')
 
 
 plot_decision_tree(dt_model, output_path='tree.png')
-plot_logistic_coefficients(lr_model, top_k=20, output_path='logreg.png')
+plot_logistic_coefficients(lr_model, top_k=20, output_path='logreg.png', dir_path='src/DataScientist/')
+plot_logistic_coefficients(lr_model, top_k=10, output_path='logreg.png', dir_path='src/Director/')
 from sklearn.metrics import confusion_matrix as _cm
 _vmax = max(
     _cm(y_test, dt_model.predict(X_test)).max(),

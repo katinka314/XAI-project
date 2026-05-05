@@ -94,7 +94,7 @@ def plot_decision_tree(model, output_path='tree.png'):
     plt.show()
 
 
-def plot_logistic_coefficients(model, top_k=20, output_path='logreg.png'):
+def plot_logistic_coefficients(model, top_k=20, output_path='logreg.png', dir_path='src/DataScientist/'):
     feature_names = model.named_steps['prep'].get_feature_names_out()
     coef = model.named_steps['clf'].coef_[0]
     top_k = max(2, top_k)
