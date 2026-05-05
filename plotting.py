@@ -22,7 +22,6 @@ from src.DataScientist.plots import (
     plot_feature_distribution,
     plot_bias_report,
     plot_business_error_summary,
-    plot_confusion_matrix_pct
 )
 from src.model_factory import fit_and_score, model_dt, model_lr
 
@@ -43,10 +42,32 @@ print(f'Logistic Regression Accuracy: {lr_score:.4f}')
 
 plot_decision_tree(dt_model, output_path='tree.png')
 plot_logistic_coefficients(lr_model, top_k=20, output_path='logreg.png')
-plot_confusion_matrix(dt_model, X_test, y_test, 'Decision Tree')
-plot_confusion_matrix(lr_model, X_test, y_test, 'Logistic Regression')
-plot_shap_summary(dt_model, X_train, 'Decision Tree', log_scale=False)
-plot_shap_summary(lr_model, X_train, 'Logistic Regression', log_scale=False)
+from sklearn.metrics import confusion_matrix as _cm
+_vmax = max(
+    _cm(y_test, dt_model.predict(X_test)).max(),
+    _cm(y_test, lr_model.predict(X_test)).max(),
+)
+plot_confusion_matrix(dt_model, X_test, y_test, 'Decision Tree', vmax=_vmax)
+plot_confusion_matrix(lr_model, X_test, y_test, 'Logistic Regression', vmax=_vmax)
+ds_pretty_names = {
+    "num__education-num": "Years of Education",
+    "num__capital-gain": "Capital Gain",
+    "num__capital-loss": "Capital Loss",
+    "num__age": "Age",
+    "num__hours-pr-week": "Hours Worked Per Week",
+    "num__fnlwgt": "Census Sampling Weight",
+    "cat__marital-status_ Married-civ-spouse": "Married",
+    "cat__relationship_ Husband": "Relationship: Husband",
+    "cat__relationship_ Not-in-family": "Not in Family",
+    "cat__occupation_ Prof-specialty": "Professional Occupation",
+    "cat__occupation_ Exec-managerial": "Executive/Managerial",
+    "cat__education_ Bachelors": "Bachelor's Degree",
+    "cat__education_ Masters": "Master's Degree",
+    "cat__sex_ Male": "Male",
+    "cat__race_ White": "White",
+}
+plot_shap_summary(dt_model, X_train, 'Decision Tree', log_scale=False, pretty_names=ds_pretty_names)
+plot_shap_summary(lr_model, X_train, 'Logistic Regression', log_scale=False, pretty_names=ds_pretty_names)
 misclassified_dt_idx = int((dt_model.predict(X_test) != y_test.values).argmax())
 plot_lime_explanation(dt_model, X_train, X_test, 'Decision Tree', instance_idx=misclassified_dt_idx)
 
@@ -132,7 +153,15 @@ plot_class_distribution(y_train, dir_path = "src/DataScientist")
 
 plot_roc_curve({"Decision Tree": dt_model, "Logistic Regression": lr_model}, X_test, y_test, dir_path = "src/DataScientist/")
 
-plot_feature_distribution(X_train = X_train, categorical = categorical_cols, numerical = numeric_cols, dir_path = "src/DataScientist/")
+plot_feature_distribution(X_train=X_train, categorical=categorical_cols, numerical=numeric_cols, dir_path="src/DataScientist/",
+                          numerical_pretty={
+                              'age': 'Age',
+                              'fnlwgt': 'Census Sampling Weight',
+                              'education-num': 'Years of Education',
+                              'capital-gain': 'Capital Gain',
+                              'capital-loss': 'Capital Loss',
+                              'hours-pr-week': 'Hours Worked Per Week',
+                          })
 
 
 plot_bias_report(dt_model, X_test, y_test, X_test, category='sex', model_name='Decision Tree')
@@ -141,6 +170,3 @@ plot_bias_report(dt_model, X_test, y_test, X_test, category='race', model_name='
 plot_bias_report(lr_model, X_test, y_test, X_test, category='race', model_name='Logistic Regression')
 
 plot_business_error_summary({"Decision Tree": dt_model, "Logistic Regression": lr_model}, X_test, y_test, dir_path = "src/Director/")
-
-plot_confusion_matrix_pct(dt_model, X_test, y_test, 'Decision Tree', dir_path = "src/DataScientist/")
-plot_confusion_matrix_pct(lr_model, X_test, y_test, 'Logistic Regression', dir_path = "src/DataScientist/")
