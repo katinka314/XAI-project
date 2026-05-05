@@ -32,6 +32,48 @@ def _clean_lime_label(label):
     return label
 
 
+def _pretty_lr_feature_name(name):
+    """Map engineered Adult-feature names to concise, audience-friendly labels."""
+    name = _clean_feature_name(name)
+    name = re.sub(r'\s+', ' ', name).strip()
+    name_norm = name.replace(' (rare)', ' rare')
+    pretty = {
+        'marital-status Married-civ-spouse': 'Married',
+        'marital-status Never-married': 'Never Married',
+        'relationship Not-in-family': 'Not in Family',
+        'relationship Own-child': 'Own Child',
+        'relationship Unmarried': 'Unmarried',
+        'relationship rare': 'Other Relationship',
+        'occupation Exec-managerial': 'Executive/Managerial',
+        'occupation Prof-specialty': 'Professional Occupation',
+        'occupation Machine-op-inspct': 'Machine Operator/Inspector',
+        'occupation Other-service': 'Other Service',
+        'workclass Self-emp-not-inc': 'Self-Employed (Non-inc)',
+        'workclass rare': 'Other Work Type',
+        'education-num': 'Years of Education',
+        'education HS-grad': 'High School Graduate',
+        'education Masters': "Master's Degree",
+        'education rare': 'Other Education',
+        'capital-gain': 'Capital Gain',
+        'native-country rare': 'Other Country',
+        'sex Male': 'Male',
+        'race rare': 'Other Race',
+    }
+    if name in pretty:
+        return pretty[name]
+    if name_norm in pretty:
+        return pretty[name_norm]
+
+    # Fallback: remove category prefix and prettify token text.
+    parts = name.split(' ', 1)
+    if len(parts) == 2 and parts[0] in {'marital-status', 'relationship', 'occupation', 'workclass', 'education', 'native-country', 'sex', 'race'}:
+        fallback = parts[1]
+    else:
+        fallback = name
+    fallback = fallback.replace('-', ' ').strip().title()
+    return fallback
+
+
 def plot_decision_tree(model, output_path='tree.png'):
     feature_names = model.named_steps['prep'].get_feature_names_out()
     class_names = [str(c) for c in model.named_steps['clf'].classes_]
@@ -55,15 +97,97 @@ def plot_decision_tree(model, output_path='tree.png'):
 def plot_logistic_coefficients(model, top_k=20, output_path='logreg.png'):
     feature_names = model.named_steps['prep'].get_feature_names_out()
     coef = model.named_steps['clf'].coef_[0]
-    top_idx = abs(coef).argsort()[-top_k:]
+    top_k = max(2, top_k)
+    n_each_side = max(1, top_k // 2)
 
-    plt.figure(figsize=(12, 8), dpi=180)
-    plt.barh(feature_names[top_idx], coef[top_idx])
-    plt.xlabel('Coefficient')
-    plt.title(f'Top {top_k} Logistic Regression Coefficients')
-    plt.tight_layout()
-    plt.savefig(dir_path + output_path)
+    pos_idx = np.argsort(coef)[-n_each_side:]
+    neg_idx = np.argsort(coef)[:n_each_side]
+    selected_idx = np.concatenate([neg_idx, pos_idx])
+
+    selected_labels = [_pretty_lr_feature_name(feature_names[i]) for i in selected_idx]
+    selected_values = coef[selected_idx]
+    order = np.argsort(selected_values)
+    selected_values = selected_values[order]
+    selected_labels = [selected_labels[i] for i in order]
+
+    colors = ['#d95f02' if v < 0 else '#1b9e77' for v in selected_values]
+
+    fig, ax = plt.subplots(figsize=(12, 8), dpi=220)
+    bars = ax.barh(selected_labels, selected_values, color=colors, edgecolor='none')
+    ax.axvline(0, color='#444444', linewidth=1.0)
+    ax.set_xlabel('Logistic Coefficient (impact on log-odds of >50K)')
+    ax.set_title(
+        f'Logistic Regression: Top {len(selected_values)} Positive and Negative Drivers',
+        pad=10,
+    )
+    ax.grid(axis='x', linestyle='--', alpha=0.25)
+    ax.set_axisbelow(True)
+
+    max_abs = np.max(np.abs(selected_values))
+    pad = max_abs * 0.04 if max_abs > 0 else 0.01
+    inside_pad = max_abs * 0.02 if max_abs > 0 else 0.005
+    for bar, value in zip(bars, selected_values):
+        y = bar.get_y() + bar.get_height() / 2
+        # For very short bars, place labels outside to keep them readable.
+        if abs(value) < max_abs * 0.12:
+            if value >= 0:
+                ax.text(
+                    value + pad * 0.6,
+                    y,
+                    f'{value:.3f}',
+                    va='center',
+                    ha='left',
+                    fontsize=10,
+                    color='#333333',
+                    fontweight='bold',
+                )
+            else:
+                ax.text(
+                    value - pad * 0.6,
+                    y,
+                    f'{value:.3f}',
+                    va='center',
+                    ha='right',
+                    fontsize=10,
+                    color='#333333',
+                    fontweight='bold',
+                )
+        elif value >= 0:
+            ax.text(
+                value - inside_pad,
+                y,
+                f'{value:.3f}',
+                va='center',
+                ha='right',
+                fontsize=10,
+                color='white',
+                fontweight='bold',
+            )
+        else:
+            ax.text(
+                value + inside_pad,
+                y,
+                f'{value:.3f}',
+                va='center',
+                ha='left',
+                fontsize=10,
+                color='white',
+                fontweight='bold',
+            )
+
+    fig.text(
+        0.5,
+        0.01,
+        'Green features increase predicted high-income odds; orange features decrease them.',
+        ha='center',
+        va='bottom',
+        fontsize=10,
+        color='#555555',
+    )
+    plt.tight_layout(rect=(0, 0.03, 1, 1))
+    fig.savefig(dir_path + output_path, dpi=300, bbox_inches='tight')
     plt.show()
+    plt.close(fig)
 
 
 def plot_shap_summary(
@@ -396,4 +520,3 @@ def plot_business_error_summary(model_dict, X_test, y_test, dir_path='src/DataSc
     plt.tight_layout()
     plt.savefig(f'{dir_path}business_error_summary.png', dpi=150)
     plt.show()
-
