@@ -95,11 +95,12 @@ def fit_and_score(model, X_train, y_train, X_test, y_test):
     from sklearn.utils.class_weight import compute_sample_weight
 
     # create per-sample weights
-    sample_weights = compute_sample_weight(
-        class_weight="balanced",
-        y=y_train
-    )
+    #sample_weights = compute_sample_weight(
+    #    class_weight="balanced",
+    #    y=y_train
+    #)
 
-    model.fit(X_train, y_train, clf__sample_weight=sample_weights)
+    #model.fit(X_train, y_train, clf__sample_weight=sample_weights)
+    model.fit(X_train, y_train)
     
     return model.score(X_test, y_test)
