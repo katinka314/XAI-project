@@ -91,6 +91,14 @@ def model_MLP(categorical_cols, numeric_cols):
     return build_MLP(categorical_cols, numeric_cols)
 
 def fit_and_score(model, X_train, y_train, X_test, y_test):
-    model.fit(X_train, y_train)
+    from sklearn.utils.class_weight import compute_sample_weight
+
+    # create per-sample weights
+    sample_weights = compute_sample_weight(
+        class_weight="balanced",
+        y=y_train
+    )
+
+    model.fit(X_train, y_train, sample_weight=sample_weights)
     
     return model.score(X_test, y_test)
