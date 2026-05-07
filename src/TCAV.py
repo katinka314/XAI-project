@@ -12,7 +12,7 @@ from data_transformation import (
     split_X_y,
 )
 
-from model_factory import fit_and_score, model_dt, model_lr
+from model_factory import fit_and_score, model_dt, model_lr, model_MLP
 # %%
 #Load data
 data = load_adult_data(data_path='../data/adult.data', nrows = None )
@@ -49,12 +49,12 @@ lr_model.fit(X_sex_train, y_train);
 predictions = dt_model.predict(X_female)
 
 print(sum(predictions == " <=50K"))
-print(sum(predictions != " =50K"))
+print(sum(predictions != " >50K"))
 
 predictions = dt_model.predict(X_male)
 
 print(sum(predictions == " <=50K"))
-print(sum(predictions != " =50K"))
+print(sum(predictions != " >50K"))
 # %% [markdown]
 # TCAV — reusable implementation
 # %%
@@ -178,13 +178,15 @@ adj_cat = [c for c in categorical_cols if c not in sensitive_cols]
 
 lr_model_fair = model_lr(adj_cat, numeric_cols)
 dt_model_fair = model_dt(adj_cat, numeric_cols)
+mlp_model_fair = model_MLP(adj_cat, numeric_cols)
 X_train_fair = X_train.drop(columns=sensitive_cols)
 X_test_fair = X_test.drop(columns=sensitive_cols)
 lr_model_fair.fit(X_train_fair, y_train)
 dt_model_fair.fit(X_train_fair, y_train)
+mlp_model_fair.fit(X_train_fair, y_train)
 
 # %%
-for model in [dt_model_fair, lr_model_fair]:
+for model in [dt_model_fair, lr_model_fair, mlp_model_fair]:
     compute_tcav(model, X_train, X_test, y_test,
                  concept_col="sex", pos_value=" Male", neg_value=" Female",
                  concept_name="Gender", pos_label="Male")

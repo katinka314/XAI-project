@@ -204,7 +204,7 @@ def plot_shap_summary(
         pretty_names.get(name, _clean_feature_name(name)) for name in feature_names
     ]
 
-    explainer = shap.Explainer(model.named_steps['clf'], X_train_t)
+    explainer = shap.Explainer(model.named_steps['clf'].predict_proba, X_train_t)
     shap_values = explainer(X_train_t)
     safe_name = model_name.lower().replace(' ', '_')
 

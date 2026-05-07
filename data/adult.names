@@ -76,7 +76,7 @@
 |          1.  A single cell estimate of the population 16+ for each state.
 |          2.  Controls for Hispanic Origin by age and sex.
 |          3.  Controls by Race, age and sex.
-|
+|main_model
 | We use all three sets of controls in our weighting program and "rake" through
 | them 6 times so that by the end we come back to all the controls we used.
 |

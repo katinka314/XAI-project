@@ -9,7 +9,7 @@ from src.data_transformation import (
     load_adult_data,
     split_X_y,
 )
-from src.model_factory import fit_and_score, model_dt, model_lr
+from src.model_factory import fit_and_score, model_dt, model_lr, model_MLP
 
 data = load_adult_data(data_path='data/adult.data', nrows=None)
 X, y = split_X_y(data)
@@ -17,8 +17,10 @@ X_train, X_test, y_train, y_test = create_train_test_split(X, y, test_size=0.2, 
 
 dt_model = model_dt(categorical_cols, numeric_cols)
 lr_model = model_lr(categorical_cols, numeric_cols)
+mlp_model = model_MLP(categorical_cols, numeric_cols)
 fit_and_score(dt_model, X_train, y_train, X_test, y_test)
 fit_and_score(lr_model, X_train, y_train, X_test, y_test)
+fit_and_score(mlp_model, X_train, y_train, X_test, y_test)
 
 
 def _preprocess_sample(prep, X, n_samples, random_state):
@@ -124,5 +126,8 @@ def plot_tsne_dt_unscaled(model, X, n_samples=1000, random_state=42,
 
 
 plot_tsne_dt_unscaled(dt_model, X_test)
+
+
 plot_tsne_2x2(dt_model, X_test, y_test, model_name="Decision Tree",    standardise=True)
 plot_tsne_2x2(lr_model, X_test, y_test, model_name="Logistic Regression", standardise=False)
+plot_tsne_2x2(mlp_model, X_test, y_test, model_name="MLP Classifier",     standardise=False)
