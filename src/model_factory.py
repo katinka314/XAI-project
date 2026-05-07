@@ -6,6 +6,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 
 
+
 def build_decision_tree_model(categorical_cols, numeric_cols):
     preprocessor = ColumnTransformer(
         transformers=[
@@ -99,6 +100,6 @@ def fit_and_score(model, X_train, y_train, X_test, y_test):
         y=y_train
     )
 
-    model.fit(X_train, y_train, sample_weight=sample_weights)
+    model.fit(X_train, y_train, clf__sample_weight=sample_weights)
     
     return model.score(X_test, y_test)

@@ -298,8 +298,7 @@ _CM_BUSINESS_LABELS = [
 def plot_confusion_matrix(model, X_test, y_test, model_name, dir_path='src/DataScientist/', plot=True, vmax=None):
     y_pred = model.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)
-    total = cm.sum()
-
+    
     if plot:
         fig, ax = plt.subplots(figsize=(7, 6))
         im = ax.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues,
@@ -311,16 +310,17 @@ def plot_confusion_matrix(model, X_test, y_test, model_name, dir_path='src/DataS
         ax.set_xticklabels(['Predicted  ≤50K', 'Predicted  >50K'], fontsize=12)
         ax.set_yticks([0, 1])
         ax.set_yticklabels(['Actual  ≤50K', 'Actual  >50K'], fontsize=12)
-
+        
         thresh = (vmax if vmax else cm.max()) / 2
         for i in range(2):
             for j in range(2):
                 count = cm[i, j]
+                total = cm[i].sum()
                 pct = count / total * 100
                 dark = count > thresh
                 fg = 'white' if dark else 'black'
                 fg_sub = 'white' if dark else '#555555'
-
+                
                 biz = _CM_BUSINESS_LABELS[i][j]
                 ax.text(j, i - 0.22, biz, ha='center', va='center',
                         color=fg_sub, fontsize=9, style='italic')
@@ -328,14 +328,14 @@ def plot_confusion_matrix(model, X_test, y_test, model_name, dir_path='src/DataS
                         color=fg, fontsize=17, fontweight='bold')
                 ax.text(j, i + 0.28, f'({pct:.1f}%)', ha='center', va='center',
                         color=fg, fontsize=10)
-
+        
         ax.set_xlabel('Predicted label')
         ax.set_ylabel('True label')
         plt.tight_layout()
         safe_name = model_name.lower().replace(' ', '_')
         plt.savefig(f"{dir_path}confusion_matrix_{safe_name}.png", dpi=150)
         plt.show()
-
+    
     return {"TP": cm[1, 1], "FP": cm[0, 1], "FN": cm[1, 0], "TN": cm[0, 0]}
 
 
