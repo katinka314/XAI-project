@@ -199,7 +199,7 @@ def plot_shap_summary(
         X_train_t = X_train_t.toarray()
 
     feature_names = model.named_steps['prep'].get_feature_names_out()
-    
+    # Use pretty_names if provided, otherwise fall back to cleaned raw name
     pretty_feature_names = [
         pretty_names.get(name, _clean_feature_name(name)) for name in feature_names
     ]
@@ -298,7 +298,6 @@ _CM_BUSINESS_LABELS = [
 def plot_confusion_matrix(model, X_test, y_test, model_name, dir_path='src/DataScientist/', plot=True, vmax=None):
     y_pred = model.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)
-    total = cm.sum()
 
     if plot:
         fig, ax = plt.subplots(figsize=(7, 6))
@@ -316,6 +315,7 @@ def plot_confusion_matrix(model, X_test, y_test, model_name, dir_path='src/DataS
         for i in range(2):
             for j in range(2):
                 count = cm[i, j]
+                total = cm[i].sum()
                 pct = count / total * 100
                 dark = count > thresh
                 fg = 'white' if dark else 'black'
