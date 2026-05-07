@@ -6,7 +6,7 @@ import pandas as pd
 column_names = [
     'age',
     'workclass',
-    'fnlwgt',
+#    'fnlwgt',
     'education',
     'education-num',
     'marital-status',
@@ -34,7 +34,7 @@ categorical_cols = [
 
 numeric_cols = [
     'age',
-    'fnlwgt',
+#    'fnlwgt',
     'education-num',
     'capital-gain',
     'capital-loss',

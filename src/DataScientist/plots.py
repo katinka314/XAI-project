@@ -298,7 +298,7 @@ _CM_BUSINESS_LABELS = [
 def plot_confusion_matrix(model, X_test, y_test, model_name, dir_path='src/DataScientist/', plot=True, vmax=None):
     y_pred = model.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)
-
+    
     if plot:
         fig, ax = plt.subplots(figsize=(7, 6))
         im = ax.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues,

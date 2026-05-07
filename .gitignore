@@ -11,6 +11,6 @@ soren
 src/DataScientist/
 src/Director/
 src/EndUser/
-
-
+work/*
+out/*
 *.png
