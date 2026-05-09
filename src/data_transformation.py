@@ -6,7 +6,7 @@ import pandas as pd
 column_names = [
     'age',
     'workclass',
-#    'fnlwgt',
+    'fnlwgt',
     'education',
     'education-num',
     'marital-status',
@@ -34,7 +34,7 @@ categorical_cols = [
 
 numeric_cols = [
     'age',
-#    'fnlwgt',
+    'fnlwgt',
     'education-num',
     'capital-gain',
     'capital-loss',
@@ -54,4 +54,3 @@ def split_X_y(data, target_col='income'):
 
 def create_train_test_split(X, y, test_size=0.2, random_state=42):
     return train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=y)
-

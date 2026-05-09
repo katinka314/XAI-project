@@ -38,7 +38,7 @@ X_age_train, X_age_test, y_age_train, y_age_test = create_train_test_split(X_age
 # %% [markdown]
 # Gender analyisis
 # %%
-categorical_cols_sex = categorical_cols[0:6] + [categorical_cols[7]]
+categorical_cols_sex = [col for col in categorical_cols if col != 'sex']
 # %%
 dt_model = model_dt(categorical_cols_sex, numeric_cols)
 lr_model = model_lr(categorical_cols_sex, numeric_cols)
@@ -146,24 +146,24 @@ def compute_tcav(
 
     # Plot
     model_name = type(main_model.named_steps["clf"]).__name__
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-    for ax, rand_scores, tcav_val, dd_val, class_label in zip(
-        axes,
-        [rand_pos, rand_neg],
-        [tcav_pos, tcav_neg],
-        [dd_pos, dd_neg],
-        [">50K", "<=50K"],
-    ):
-        ax.hist(rand_scores, bins=20, color="steelblue", alpha=0.7, label="Random CAVs")
-        ax.axvline(tcav_val, color="crimson", linewidth=2,
-                   label=f"{pos_label} CAV ({tcav_val:.3f})")
-        ax.set_title(f"{class_label} class  |  directional derivative: {dd_val:.4f}")
-        ax.set_xlabel("TCAV Score")
-        ax.set_ylabel("Count")
-        ax.legend()
-    plt.suptitle(f"TCAV: {concept_name} | {model_name}", fontsize=13)
-    plt.tight_layout()
-    plt.show()
+    #fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    #for ax, rand_scores, tcav_val, dd_val, class_label in zip(
+    #    axes,
+    #    [rand_pos, rand_neg],
+    #    [tcav_pos, tcav_neg],
+    #    [dd_pos, dd_neg],
+    #    [">50K", "<=50K"],
+    #):
+    #    ax.hist(rand_scores, bins=20, color="steelblue", alpha=0.7, label="Random CAVs")
+    #    ax.axvline(tcav_val, color="crimson", linewidth=2,
+    #               label=f"{pos_label} CAV ({tcav_val:.3f})")
+    #    ax.set_title(f"{class_label} class  |  directional derivative: {dd_val:.4f}")
+    #    ax.set_xlabel("TCAV Score")
+    #    ax.set_ylabel("Count")
+    #    ax.legend()
+    #plt.suptitle(f"TCAV: {concept_name} | {model_name}", fontsize=13)
+    #plt.tight_layout()
+    #plt.show()
 
     print(f"[{model_name} | {concept_name}]")
     print(f"  >50K  — TCAV: {tcav_pos:.3f}  dd: {dd_pos:.4f}")
