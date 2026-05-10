@@ -298,10 +298,12 @@ _CM_BUSINESS_LABELS = [
 ]
 
 def plot_confusion_matrix(model, X_test, y_test, model_name, dir_path='src/DataScientist/', plot=True, vmax=None):
+    from pathlib import Path
     y_pred = model.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)
 
     if plot:
+        Path(dir_path).mkdir(parents=True, exist_ok=True)
         fig, ax = plt.subplots(figsize=(7, 6))
         im = ax.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues,
                        vmin=0, vmax=vmax or cm.max())
