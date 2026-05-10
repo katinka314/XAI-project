@@ -35,14 +35,28 @@ X_female, y_female = X_test[female_mask].copy(), y_test[female_mask]
 
 
 # Confusion Matrix - Decision Tree
-dtf_confusion = plot_confusion_matrix(dt_model, X_female, y_female, "Female Confusion DT", dir_path='src/DataScientist/', plot=True, vmax=None)
-dtm_confusion = plot_confusion_matrix(dt_model, X_male, y_male, "Male Confusion DT", dir_path='src/DataScientist/', plot=True, vmax=None)
+dtf_confusion = plot_confusion_matrix(dt_model, X_female, y_female, "Female Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dtm_confusion = plot_confusion_matrix(dt_model, X_male, y_male, "Male Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
 
 #Confusion Matrix - Neural Network
-nnf_confusion = plot_confusion_matrix(nn_model, X_female, y_female, "Female Confusion NN", dir_path='src/DataScientist/', plot=True, vmax=None)
-nnm_confusion = plot_confusion_matrix(nn_model, X_male, y_male, "Male Confusion NN", dir_path='src/DataScientist/', plot=True, vmax=None)
+nnf_confusion = plot_confusion_matrix(nn_model, X_female, y_female, "Female Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+nnm_confusion = plot_confusion_matrix(nn_model, X_male, y_male, "Male Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
 
+white_mask = X_test['race'] == " White"
+black_mask = X_test['race'] == " Black"
+other_mask = X_test['race'] == " Other"
 
+X_white, y_white = X_test[white_mask].copy(), y_test[white_mask]
+X_black, y_black = X_test[black_mask].copy(), y_test[black_mask]
+X_other, y_other = X_test[other_mask].copy(), y_test[other_mask]
+
+# Confusion Matrix - Decision Tree
+dtw_confusion = plot_confusion_matrix(dt_model, X_white, y_white, "White Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dtb_confusion = plot_confusion_matrix(dt_model, X_black, y_black, "Black Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dto_confusion = plot_confusion_matrix(dt_model, X_other, y_other, "Other    Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None) 
+nnw_confusion = plot_confusion_matrix(nn_model, X_white, y_white, "White Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+nnb_confusion = plot_confusion_matrix(nn_model, X_black, y_black, "Black Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+nno_confusion = plot_confusion_matrix(nn_model, X_other, y_other, "Other    Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
 
 #%%
 
@@ -57,34 +71,8 @@ nnf_tpr = nnf_confusion["TP"] / (nnf_confusion["FN"] + nnf_confusion["TP"])  # T
 nnm_fpr = nnm_confusion["FP"] / (nnm_confusion["TN"] + nnm_confusion["FP"])  # False Positive Rate
 nnm_tpr = nnm_confusion["TP"] / (nnm_confusion["FN"] + nnm_confusion["TP"])  # True Positive Rate
 
-print(f"Female FPR: {dtf_fpr:.4f},  Female TPR: {dtf_tpr:.4f}")
-print(f"Male FPR: {dtm_fpr:.4f},  Male TPR: {dtm_tpr:.4f}")
-
-print(f"Female FPR: {nnf_fpr:.4f},  Female TPR: {nnf_tpr:.4f}")
-print(f"Male FPR: {nnm_fpr:.4f},  Male TPR: {nnm_tpr:.4f}")
-
-
-
-
 
 # %%
-
-
-white_mask = X_test['race'] == " White"
-black_mask = X_test['race'] == " Black"
-other_mask = X_test['race'] == " Other"
-
-X_white, y_white = X_test[white_mask].copy(), y_test[white_mask]
-X_black, y_black = X_test[black_mask].copy(), y_test[black_mask]
-X_other, y_other = X_test[other_mask].copy(), y_test[other_mask]
-
-# Confusion Matrix - Decision Tree
-dtw_confusion = plot_confusion_matrix(dt_model, X_white, y_white, "White Confusion DT", dir_path='src/DataScientist/', plot=True, vmax=None)
-dtb_confusion = plot_confusion_matrix(dt_model, X_black, y_black, "Black Confusion DT", dir_path='src/DataScientist/', plot=True, vmax=None)
-dto_confusion = plot_confusion_matrix(dt_model, X_other, y_other, "Other    Confusion DT", dir_path='src/DataScientist/', plot=True, vmax=None) 
-nnw_confusion = plot_confusion_matrix(nn_model, X_white, y_white, "White Confusion NN", dir_path='src/DataScientist/', plot=True, vmax=None)
-nnb_confusion = plot_confusion_matrix(nn_model, X_black, y_black, "Black Confusion NN", dir_path='src/DataScientist/', plot=True, vmax=None)
-nno_confusion = plot_confusion_matrix(nn_model, X_other, y_other, "Other    Confusion NN", dir_path='src/DataScientist/', plot=True, vmax=None)
 
 dtw_fpr = dtw_confusion["FP"] / (dtw_confusion["TN"] + dtw_confusion["FP"])  # False Positive Rate for White
 dtw_tpr = dtw_confusion["TP"] / (dtw_confusion["FN"] + dtw_confusion["TP"])  # True Positive Rate for White
@@ -100,13 +88,14 @@ nnb_tpr = nnb_confusion["TP"] / (nnb_confusion["FN"] + nnb_confusion["TP"])  # T
 nno_fpr = nno_confusion["FP"] / (nno_confusion["TN"] + nno_confusion["FP"])  # False Positive Rate for Other
 nno_tpr = nno_confusion["TP"] / (nno_confusion["FN"] + nno_confusion["TP"])  # True Positive Rate for Other
 
+
 #%%
 
-X_sex_train, X_sex_test = X_train.drop(columns=['sex', 'race']), X_test.drop(columns=['sex', 'race'])
-categorical_cols_sex = [col for col in categorical_cols if col != 'sex' and col != 'race']
+X_sex_train, X_sex_test = X_train.drop(columns=['sex', 'race', 'relationship']), X_test.drop(columns=['sex', 'race', 'relationship'])
+categorical_cols_sex = [col for col in categorical_cols if col != 'sex' and col != 'race' and col != 'relationship']
 
-X_female, X_male = X_female.drop(columns=['sex', 'race']), X_male.drop(columns=['sex', 'race'])
-X_white, X_black, X_other = X_white.drop(columns=['sex', 'race']), X_black.drop(columns=['sex', 'race']), X_other.drop(columns=['sex', 'race'])
+X_female, X_male = X_female.drop(columns=['sex', 'race', 'relationship']), X_male.drop(columns=['sex', 'race', 'relationship'])
+X_white, X_black, X_other = X_white.drop(columns=['sex', 'race', 'relationship']), X_black.drop(columns=['sex', 'race', 'relationship']), X_other.drop(columns=['sex', 'race', 'relationship'])
 
 # %%
 
@@ -121,18 +110,19 @@ dt_confusion_fair = plot_confusion_matrix(dt_model_fair, X_sex_test, y_test, "Co
 nn_confusion_fair = plot_confusion_matrix(nn_model_fair, X_sex_test, y_test, "Confusion Matrix NN Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
 
 # Gender analyisis
-dtf_confusion_fair = plot_confusion_matrix(dt_model_fair, X_female, y_female, "Female Confusion DT Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
-dtm_confusion_fair = plot_confusion_matrix(dt_model_fair, X_male, y_male, "Male Confusion DT Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
-nnf_confusion_fair = plot_confusion_matrix(nn_model_fair, X_female, y_female, "Female Confusion NN Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
-nnm_confusion_fair = plot_confusion_matrix(nn_model_fair, X_male, y_male, "Male Confusion NN Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
+dtf_confusion_fair = plot_confusion_matrix(dt_model_fair, X_female, y_female, "Female Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dtm_confusion_fair = plot_confusion_matrix(dt_model_fair, X_male, y_male, "Male Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+nnf_confusion_fair = plot_confusion_matrix(nn_model_fair, X_female, y_female, "Female Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+nnm_confusion_fair = plot_confusion_matrix(nn_model_fair, X_male, y_male, "Male Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
 
 # Race analysis
-dtw_confusion_fair = plot_confusion_matrix(dt_model_fair, X_white, y_white, "White Confusion DT Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
-dtb_confusion_fair = plot_confusion_matrix(dt_model_fair, X_black, y_black, "Black Confusion DT Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
-dto_confusion_fair = plot_confusion_matrix(dt_model_fair, X_other, y_other, "Other Confusion DT Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
-nnw_confusion_fair = plot_confusion_matrix(nn_model_fair, X_white, y_white, "White Confusion NN Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
-nnb_confusion_fair = plot_confusion_matrix(nn_model_fair, X_black, y_black, "Black Confusion NN Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
-nno_confusion_fair = plot_confusion_matrix(nn_model_fair, X_other, y_other, "Other Confusion NN Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
+dtw_confusion_fair = plot_confusion_matrix(dt_model_fair, X_white, y_white, "White Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dtb_confusion_fair = plot_confusion_matrix(dt_model_fair, X_black, y_black, "Black Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dto_confusion_fair = plot_confusion_matrix(dt_model_fair, X_other, y_other, "Other Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+nnw_confusion_fair = plot_confusion_matrix(nn_model_fair, X_white, y_white, "White Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+nnb_confusion_fair = plot_confusion_matrix(nn_model_fair, X_black, y_black, "Black Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+nno_confusion_fair = plot_confusion_matrix(nn_model_fair, X_other, y_other, "Other Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+
 
 #%% Checking for nul hypothesis - Is there significant difference in accuracy between the original and the fair model?
 from scipy.stats import ttest_rel
@@ -142,13 +132,14 @@ fair_accuracies_dt = []  # Replace with actual accuracies from multiple runs
 original_accuracies_nn = []  # Replace with actual accuracies from multiple runs
 fair_accuracies_nn = []  # Replace with actual accuracies from multiple runs 
 
-for i in range(10):
+for i in range(50):
     X_train, X_test, y_train, y_test  = create_train_test_split(X, y, test_size=0.2, random_state=42+i)
-    X_train_fair,X_test_fair  = X_train.drop(columns=['sex', 'race']), X_test.drop(columns=['sex', 'race'])
+    X_train_fair,X_test_fair  = X_train.drop(columns=['sex', 'race', 'relationship']), X_test.drop(columns=['sex', 'race', 'relationship'])
     original_accuracies_dt.append(fit_and_score(model=dt_model, X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test))
     original_accuracies_nn.append(fit_and_score(model=nn_model, X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test))
     fair_accuracies_dt.append(fit_and_score(model=dt_model_fair, X_train=X_train_fair, y_train=y_train, X_test=X_test_fair, y_test=y_test))
     fair_accuracies_nn.append(fit_and_score(model=nn_model_fair, X_train=X_train_fair, y_train=y_train, X_test=X_test_fair, y_test=y_test))
+
 
 
 # Perform paired t-test for Decision Tree
@@ -157,3 +148,70 @@ print(f"Decision Tree - t-statistic: {t_stat_dt:.4f}, p-value: {p_value_dt:.4f}"
 # Perform paired t-test for Neural Network
 t_stat_nn, p_value_nn = ttest_rel(original_accuracies_nn, fair_accuracies_nn)
 print(f"Neural Network - t-statistic: {t_stat_nn:.4f}, p-value: {p_value_nn:.4f}")
+#%%
+
+# Fairness Metrics - Equalized Odds -- Sex 
+dtf_fpr_fair = dtf_confusion_fair["FP"] / (dtf_confusion_fair["TN"] + dtf_confusion_fair["FP"])  # False Positive Rate for Females
+dtf_tpr_fair = dtf_confusion_fair["TP"] / (dtf_confusion_fair["FN"] + dtf_confusion_fair["TP"])  # True Positive Rate for Females
+dtm_fpr_fair = dtm_confusion_fair["FP"] / (dtm_confusion_fair["TN"] + dtm_confusion_fair["FP"])  # False Positive Rate for Males
+dtm_tpr_fair = dtm_confusion_fair["TP"] / (dtm_confusion_fair["FN"] + dtm_confusion_fair["TP"])  # True Positive Rate for Males
+
+nnf_fpr_fair = nnf_confusion_fair["FP"] / (nnf_confusion_fair["TN"] + nnf_confusion_fair["FP"])  # False Positive Rate
+nnf_tpr_fair = nnf_confusion_fair["TP"] / (nnf_confusion_fair["FN"] + nnf_confusion_fair["TP"])  # True Positive Rate
+nnm_fpr_fair = nnm_confusion_fair["FP"] / (nnm_confusion_fair["TN"] + nnm_confusion_fair["FP"])  # False Positive Rate
+nnm_tpr_fair = nnm_confusion_fair["TP"] / (nnm_confusion_fair["FN"] + nnm_confusion_fair["TP"])  # True Positive Rate
+
+
+dtw_fpr_fair = dtw_confusion_fair["FP"] / (dtw_confusion_fair["TN"] + dtw_confusion_fair["FP"])  # False Positive Rate for White
+dtw_tpr_fair = dtw_confusion_fair["TP"] / (dtw_confusion_fair["FN"] + dtw_confusion_fair["TP"])  # True Positive Rate for White
+dtb_fpr_fair = dtb_confusion_fair["FP"] / (dtb_confusion_fair["TN"] + dtb_confusion_fair["FP"])  # False Positive Rate for Black
+dtb_tpr_fair = dtb_confusion_fair["TP"] / (dtb_confusion_fair["FN"] + dtb_confusion_fair["TP"])  # True Positive Rate for Black
+dto_fpr_fair = dto_confusion_fair["FP"] / (dto_confusion_fair["TN"] + dto_confusion_fair["FP"])  # False Positive Rate for Other
+dto_tpr_fair = dto_confusion_fair["TP"] / (dto_confusion_fair["FN"] + dto_confusion_fair["TP"])  # True Positive Rate for Other
+
+nnw_fpr_fair = nnw_confusion_fair["FP"] / (nnw_confusion_fair["TN"] + nnw_confusion_fair["FP"])  # False Positive Rate for White
+nnw_tpr_fair = nnw_confusion_fair["TP"] / (nnw_confusion_fair["FN"] + nnw_confusion_fair["TP"])  # True Positive Rate for White
+nnb_fpr_fair = nnb_confusion_fair["FP"] / (nnb_confusion_fair["TN"] + nnb_confusion_fair["FP"])  # False Positive Rate for Black
+nnb_tpr_fair = nnb_confusion_fair["TP"] / (nnb_confusion_fair["FN"] + nnb_confusion_fair["TP"])  # True Positive Rate for Black
+nno_fpr_fair = nno_confusion_fair["FP"] / (nno_confusion_fair["TN"] + nno_confusion_fair["FP"])  # False Positive Rate for Other
+nno_tpr_fair = nno_confusion_fair["TP"] / (nno_confusion_fair["FN"] + nno_confusion_fair["TP"])  # True Positive Rate for Other
+
+
+#%%
+
+import pandas as pd
+
+# Create a table
+data = [
+    ["Decision Tree", "Female", dtf_fpr, dtf_tpr],
+    ["Decision Tree", "Male",   dtm_fpr, dtm_tpr],
+    ["Decision Tree", "Female Fair", dtf_fpr_fair, dtf_tpr_fair],
+    ["Decision Tree", "Male Fair",   dtm_fpr_fair, dtm_tpr_fair],
+    
+    ["Neural Network", "Female", nnf_fpr, nnf_tpr],
+    ["Neural Network", "Male",   nnm_fpr, nnm_tpr],
+    ["Neural Network", "Female Fair", nnf_fpr_fair, nnf_tpr_fair],
+    ["Neural Network", "Male Fair",   nnm_fpr_fair, nnm_tpr_fair],
+    
+    ["Decision Tree", "White", dtw_fpr, dtw_tpr],
+    ["Decision Tree", "Black", dtb_fpr, dtb_tpr],
+    ["Decision Tree", "Other", dto_fpr, dto_tpr],
+    ["Decision Tree", "White Fair", dtw_fpr_fair, dtw_tpr_fair],
+    ["Decision Tree", "Black Fair", dtb_fpr_fair, dtb_tpr_fair],
+    ["Decision Tree", "Other Fair", dto_fpr_fair, dto_tpr_fair],
+    
+    ["Neural Network", "White", nnw_fpr, nnw_tpr],
+    ["Neural Network", "Black", nnb_fpr, nnb_tpr],
+    ["Neural Network", "Other", nno_fpr, nno_tpr],
+    ["Neural Network", "White Fair", nnw_fpr_fair, nnw_tpr_fair],
+    ["Neural Network", "Black Fair", nnb_fpr_fair, nnb_tpr_fair],
+    ["Neural Network", "Other Fair", nno_fpr_fair, nno_tpr_fair],
+]
+
+df = pd.DataFrame(data, columns=["Model", "Group", "FPR", "TPR"])
+
+# Save to CSV
+df.to_csv("fairness_metrics.csv", index=False)
+
+
+
