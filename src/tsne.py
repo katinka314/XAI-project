@@ -1,6 +1,7 @@
 # %%
 from pathlib import Path
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -145,6 +146,10 @@ for i, (W, b) in enumerate(zip(coefs, intercepts)):
 # Replicate sklearn's predict_proba format
 manual_proba = np.hstack([1 - h, h])
 mlp_classifications = mlp.predict(testset)
+wrong_mask = mlp_classifications != y_test.values
+pos_label = mlp.classes_[1]
+fp_mask = wrong_mask & (mlp_classifications == pos_label)
+fn_mask = wrong_mask & (mlp_classifications != pos_label)
 
 print(f"Manual predict_proba:      {manual_proba}")
 print(f"Sklearn predict_proba:      {mlp.predict_proba(testset)}")
@@ -164,6 +169,8 @@ onehotencoder = preprocessor["cat"]
 layername = "Layer 1"
 for layer in layers:
     vis_layer = layer
+
+    # --- Categorical columns ---
     for col_idx, overall_category in enumerate(categorical_cols):
         _, ax = plt.subplots(figsize=(8, 5))
         encoder_categories = onehotencoder.categories_[col_idx]
@@ -174,7 +181,8 @@ for layer in layers:
         total_obs = 0
 
         ax.set_title(f"t-SNE Visualization of Hidden {layername}\n{overall_category.replace('-', ' ').title()}")
-        for class_name in sorted(frequent_categories):
+        category_counts = X_test[overall_category].value_counts()
+        for class_name in sorted(frequent_categories, key=lambda c: category_counts.get(c, 0), reverse=True):
             mask = X_test[overall_category] == class_name
             x = vis_layer[:, 0][mask]
             y = vis_layer[:, 1][mask]
@@ -193,24 +201,95 @@ for layer in layers:
         ax.legend()
         ax.set_xlabel("t-SNE 1")
         ax.set_ylabel("t-SNE 2")
+        plt.tight_layout()
         plt.savefig(f"tsne/{layername}/{str(overall_category).strip()}")
         # plt.show()
-        ax.clear()
+        plt.close()
 
+    # --- Numeric columns ---
+    _LOG_SCALE_COLS = {"capital-gain", "capital-loss"}
+    for col in numeric_cols:
+        _, ax = plt.subplots(figsize=(8, 5))
+        values = X_test[col].values
+        if col in _LOG_SCALE_COLS:
+            plot_values = np.clip(values, 1, None)
+            norm = mcolors.LogNorm(vmin=1, vmax=max(plot_values.max(), 2))
+            cbar_label = col.replace("-", " ").title() + " (log scale)"
+        else:
+            plot_values = values
+            norm = None
+            cbar_label = col.replace("-", " ").title()
+        sc = ax.scatter(
+            vis_layer[:, 0], vis_layer[:, 1],
+            c=plot_values, cmap="viridis", alpha=point_alpha, edgecolors="w", norm=norm,
+        )
+        plt.colorbar(sc, ax=ax, label=cbar_label)
+        ax.set_title(f"t-SNE Visualization of Hidden {layername}\n{col.replace('-', ' ').title()}")
+        ax.set_xlabel("t-SNE 1")
+        ax.set_ylabel("t-SNE 2")
+        plt.tight_layout()
+        plt.savefig(f"tsne/{layername}/{str(col).strip()}")
+        # plt.show()
+        plt.close()
+
+    # --- Prediction probability (post-sigmoid, pre-threshold) ---
+    _, ax = plt.subplots(figsize=(8, 5))
+    proba = mlp.predict_proba(testset)[:, 1]
+    sc = ax.scatter(
+        vis_layer[:, 0], vis_layer[:, 1],
+        c=proba, cmap="RdYlGn", vmin=0, vmax=1,
+        alpha=point_alpha, edgecolors="w", linewidths=0.3, s=15,
+    )
+    plt.colorbar(sc, ax=ax, label="P(>50K)")
+    ax.set_title(f"t-SNE Visualization of Hidden {layername}\nPrediction Probability")
+    ax.set_xlabel("t-SNE 1")
+    ax.set_ylabel("t-SNE 2")
+    plt.tight_layout()
+    plt.savefig(f"tsne/{layername}/prediction_probability")
+    # plt.show()
+    plt.close()
+
+    # --- Misclassifications ---
+    _, ax = plt.subplots(figsize=(8, 5))
+    ax.scatter(
+        vis_layer[:, 0][~wrong_mask], vis_layer[:, 1][~wrong_mask],
+        color='lightgrey', alpha=0.3, s=10, edgecolors='none', zorder=1,
+    )
+    ax.scatter(
+        vis_layer[:, 0][fp_mask], vis_layer[:, 1][fp_mask],
+        color='#e66101', alpha=0.8, s=20, edgecolors='w', linewidths=0.3,
+        label=f'False Positive (n={fp_mask.sum()})', zorder=3,
+    )
+    ax.scatter(
+        vis_layer[:, 0][fn_mask], vis_layer[:, 1][fn_mask],
+        color='#5e3c99', alpha=0.8, s=20, edgecolors='w', linewidths=0.3,
+        label=f'False Negative (n={fn_mask.sum()})', zorder=3,
+    )
+    ax.legend()
+    ax.set_title(f"t-SNE Visualization of Hidden {layername}\nMisclassifications")
+    ax.set_xlabel("t-SNE 1")
+    ax.set_ylabel("t-SNE 2")
+    plt.tight_layout()
+    plt.savefig(f"tsne/{layername}/misclassifications")
+    # plt.show()
+    plt.close()
+
+    # --- Classifications ---
     _, ax = plt.subplots(figsize=(8, 5))
     ax.set_title(f"t-SNE Visualization of Hidden {layername}\n Classifications")
     total_obs = 0
     for prediction_class in np.unique(mlp_classifications):
         print(prediction_class)
-        x = layer1[:, 0][mlp_classifications == prediction_class]
-        y = layer1[:, 1][mlp_classifications == prediction_class]
+        x = layer[:, 0][mlp_classifications == prediction_class]
+        y = layer[:, 1][mlp_classifications == prediction_class]
         total_obs += len(x)
         ax.scatter(x, y, label=prediction_class, alpha=point_alpha, edgecolors="w")
     ax.legend()
     ax.set_xlabel("t-SNE 1")
     ax.set_ylabel("t-SNE 2")
-        # plt.scatter(x, y)
+    plt.tight_layout()
     plt.savefig(f"tsne/{layername}/classifications")
     # plt.show()
+    plt.close()
 
     layername = "Layer 2"
