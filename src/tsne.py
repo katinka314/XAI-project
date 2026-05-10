@@ -1,6 +1,7 @@
 # %%
 from pathlib import Path
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -164,6 +165,8 @@ onehotencoder = preprocessor["cat"]
 layername = "Layer 1"
 for layer in layers:
     vis_layer = layer
+
+    # --- Categorical columns ---
     for col_idx, overall_category in enumerate(categorical_cols):
         _, ax = plt.subplots(figsize=(8, 5))
         encoder_categories = onehotencoder.categories_[col_idx]
@@ -193,24 +196,53 @@ for layer in layers:
         ax.legend()
         ax.set_xlabel("t-SNE 1")
         ax.set_ylabel("t-SNE 2")
+        plt.tight_layout()
         plt.savefig(f"tsne/{layername}/{str(overall_category).strip()}")
         # plt.show()
-        ax.clear()
+        plt.close()
 
+    # --- Numeric columns ---
+    _LOG_SCALE_COLS = {"capital-gain", "capital-loss"}
+    for col in numeric_cols:
+        _, ax = plt.subplots(figsize=(8, 5))
+        values = X_test[col].values
+        if col in _LOG_SCALE_COLS:
+            plot_values = np.clip(values, 1, None)
+            norm = mcolors.LogNorm(vmin=1, vmax=max(plot_values.max(), 2))
+            cbar_label = col.replace("-", " ").title() + " (log scale)"
+        else:
+            plot_values = values
+            norm = None
+            cbar_label = col.replace("-", " ").title()
+        sc = ax.scatter(
+            vis_layer[:, 0], vis_layer[:, 1],
+            c=plot_values, cmap="viridis", alpha=point_alpha, edgecolors="w", norm=norm,
+        )
+        plt.colorbar(sc, ax=ax, label=cbar_label)
+        ax.set_title(f"t-SNE Visualization of Hidden {layername}\n{col.replace('-', ' ').title()}")
+        ax.set_xlabel("t-SNE 1")
+        ax.set_ylabel("t-SNE 2")
+        plt.tight_layout()
+        plt.savefig(f"tsne/{layername}/{str(col).strip()}")
+        # plt.show()
+        plt.close()
+
+    # --- Classifications ---
     _, ax = plt.subplots(figsize=(8, 5))
     ax.set_title(f"t-SNE Visualization of Hidden {layername}\n Classifications")
     total_obs = 0
     for prediction_class in np.unique(mlp_classifications):
         print(prediction_class)
-        x = layer1[:, 0][mlp_classifications == prediction_class]
-        y = layer1[:, 1][mlp_classifications == prediction_class]
+        x = layer[:, 0][mlp_classifications == prediction_class]
+        y = layer[:, 1][mlp_classifications == prediction_class]
         total_obs += len(x)
         ax.scatter(x, y, label=prediction_class, alpha=point_alpha, edgecolors="w")
     ax.legend()
     ax.set_xlabel("t-SNE 1")
     ax.set_ylabel("t-SNE 2")
-        # plt.scatter(x, y)
+    plt.tight_layout()
     plt.savefig(f"tsne/{layername}/classifications")
     # plt.show()
+    plt.close()
 
     layername = "Layer 2"
