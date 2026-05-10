@@ -92,6 +92,7 @@ def plot_decision_tree(model, output_path='tree.png'):
     plt.tight_layout()
     plt.savefig(dir_path + output_path)
     # plt.show()
+    plt.close()
 
 
 def plot_logistic_coefficients(model, top_k=20, output_path='logreg.png', dir_path='src/DataScientist/'):
@@ -232,6 +233,7 @@ def plot_shap_summary(
     plt.tight_layout()
     plt.savefig(f'{dir_path}shap_{safe_name}.png')
     # plt.show()
+    plt.close()
 
 
 def plot_lime_explanation(model, X_train, X_test, model_name, instance_idx=0, num_features=10,
@@ -298,7 +300,7 @@ _CM_BUSINESS_LABELS = [
 def plot_confusion_matrix(model, X_test, y_test, model_name, dir_path='src/DataScientist/', plot=True, vmax=None):
     y_pred = model.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)
-    
+
     if plot:
         fig, ax = plt.subplots(figsize=(7, 6))
         im = ax.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues,
@@ -335,6 +337,7 @@ def plot_confusion_matrix(model, X_test, y_test, model_name, dir_path='src/DataS
         safe_name = model_name.lower().replace(' ', '_')
         plt.savefig(f"{dir_path}confusion_matrix_{safe_name}.png", dpi=150)
         # plt.show()
+        plt.close()
 
     return {"TP": cm[1, 1], "FP": cm[0, 1], "FN": cm[1, 0], "TN": cm[0, 0]}
 
@@ -382,6 +385,7 @@ def plot_fairness(model, X_test, Y_test, category, model_name,
     plt.tight_layout()
     plt.savefig(f'{dir_path}fairness_{category}_{model_name}.png', bbox_inches='tight')
     # plt.show()
+    plt.close()
 
 
 def plot_class_distribution(y, dir_path='src/DataScientist/'):
@@ -395,6 +399,7 @@ def plot_class_distribution(y, dir_path='src/DataScientist/'):
     plt.tight_layout()
     plt.savefig(f'{dir_path}class_distribution.png')
     # plt.show()
+    plt.close()
 
 
 def plot_roc_curve(models_dict, X_test, y_test, dir_path='src/DataScientist/'):
@@ -413,6 +418,7 @@ def plot_roc_curve(models_dict, X_test, y_test, dir_path='src/DataScientist/'):
     plt.tight_layout()
     plt.savefig(f'{dir_path}roc_curve.png')
     # plt.show()
+    plt.close()
 
 
 def plot_feature_distribution(X_train, categorical, numerical, dir_path='src/DataScientist/',
@@ -435,6 +441,7 @@ def plot_feature_distribution(X_train, categorical, numerical, dir_path='src/Dat
     plt.tight_layout()
     plt.savefig(f'{dir_path}numerical_distributions.png')
     # plt.show()
+    plt.close()
 
     # Categorical distributions — shared y-axis so frequencies are comparable
     cols = 3
@@ -455,6 +462,7 @@ def plot_feature_distribution(X_train, categorical, numerical, dir_path='src/Dat
     plt.tight_layout()
     plt.savefig(f'{dir_path}categorical_distributions.png')
     # plt.show()
+    plt.close()
 
 
 def plot_bias_report(model, X_test, y_test, X_test_original, category, model_name, dir_path='src/DataScientist/'):
@@ -494,6 +502,7 @@ def plot_bias_report(model, X_test, y_test, X_test_original, category, model_nam
     safe_name = model_name.lower().replace(' ', '_')
     plt.savefig(f'{dir_path}bias_report_{category}_{safe_name}.png', dpi=150)
     # plt.show()
+    plt.close()
 
 
 def plot_business_error_summary(model_dict, X_test, y_test, dir_path='src/DataScientist/'):
@@ -520,3 +529,4 @@ def plot_business_error_summary(model_dict, X_test, y_test, dir_path='src/DataSc
     plt.tight_layout()
     plt.savefig(f'{dir_path}business_error_summary.png', dpi=150)
     # plt.show()
+    plt.close()
