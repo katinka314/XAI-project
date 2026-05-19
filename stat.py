@@ -37,12 +37,12 @@ nn_confusion = plot_confusion_matrix(nn_model, X_test, y_test, "Confusion Matrix
 dt_confusion = plot_confusion_matrix(dt_model, X_test, y_test, "Confusion Matrix DT", dir_path='src/DataScientist/', plot=True, vmax=None)
 
 # Confusion Matrix - Decision Tree
-dtf_confusion = plot_confusion_matrix(dt_model, X_female, y_female, "Female Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-dtm_confusion = plot_confusion_matrix(dt_model, X_male, y_male, "Male Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dtf_confusion = plot_confusion_matrix(dt_model, X_female, y_female, "Female Confusion DT", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+dtm_confusion = plot_confusion_matrix(dt_model, X_male, y_male, "Male Confusion DT", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
 
 #Confusion Matrix - Neural Network
-nnf_confusion = plot_confusion_matrix(nn_model, X_female, y_female, "Female Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-nnm_confusion = plot_confusion_matrix(nn_model, X_male, y_male, "Male Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+nnf_confusion = plot_confusion_matrix(nn_model, X_female, y_female, "Female Confusion NN", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+nnm_confusion = plot_confusion_matrix(nn_model, X_male, y_male, "Male Confusion NN", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
 
 white_mask = X_test['race'] == " White"
 black_mask = X_test['race'] == " Black"
@@ -53,12 +53,12 @@ X_black, y_black = X_test[black_mask].copy(), y_test[black_mask]
 X_other, y_other = X_test[other_mask].copy(), y_test[other_mask]
 
 # Confusion Matrix - Decision Tree
-dtw_confusion = plot_confusion_matrix(dt_model, X_white, y_white, "White Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-dtb_confusion = plot_confusion_matrix(dt_model, X_black, y_black, "Black Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-dto_confusion = plot_confusion_matrix(dt_model, X_other, y_other, "Other    Confusion DT", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None) 
-nnw_confusion = plot_confusion_matrix(nn_model, X_white, y_white, "White Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-nnb_confusion = plot_confusion_matrix(nn_model, X_black, y_black, "Black Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-nno_confusion = plot_confusion_matrix(nn_model, X_other, y_other, "Other    Confusion NN", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dtw_confusion = plot_confusion_matrix(dt_model, X_white, y_white, "White Confusion DT", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+dtb_confusion = plot_confusion_matrix(dt_model, X_black, y_black, "Black Confusion DT", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+dto_confusion = plot_confusion_matrix(dt_model, X_other, y_other, "Other    Confusion DT", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+nnw_confusion = plot_confusion_matrix(nn_model, X_white, y_white, "White Confusion NN", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+nnb_confusion = plot_confusion_matrix(nn_model, X_black, y_black, "Black Confusion NN", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+nno_confusion = plot_confusion_matrix(nn_model, X_other, y_other, "Other    Confusion NN", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
 
 #%%
 
@@ -112,18 +112,18 @@ dt_confusion_fair = plot_confusion_matrix(dt_model_fair, X_sex_test, y_test, "Co
 nn_confusion_fair = plot_confusion_matrix(nn_model_fair, X_sex_test, y_test, "Confusion Matrix NN Fair", dir_path='src/DataScientist/', plot=True, vmax=None)
 
 # Gender analyisis
-dtf_confusion_fair = plot_confusion_matrix(dt_model_fair, X_female, y_female, "Female Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-dtm_confusion_fair = plot_confusion_matrix(dt_model_fair, X_male, y_male, "Male Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-nnf_confusion_fair = plot_confusion_matrix(nn_model_fair, X_female, y_female, "Female Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-nnm_confusion_fair = plot_confusion_matrix(nn_model_fair, X_male, y_male, "Male Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dtf_confusion_fair = plot_confusion_matrix(dt_model_fair, X_female, y_female, "Female Confusion DT Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+dtm_confusion_fair = plot_confusion_matrix(dt_model_fair, X_male, y_male, "Male Confusion DT Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+nnf_confusion_fair = plot_confusion_matrix(nn_model_fair, X_female, y_female, "Female Confusion NN Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+nnm_confusion_fair = plot_confusion_matrix(nn_model_fair, X_male, y_male, "Male Confusion NN Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
 
 # Race analysis
-dtw_confusion_fair = plot_confusion_matrix(dt_model_fair, X_white, y_white, "White Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-dtb_confusion_fair = plot_confusion_matrix(dt_model_fair, X_black, y_black, "Black Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-dto_confusion_fair = plot_confusion_matrix(dt_model_fair, X_other, y_other, "Other Confusion DT Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-nnw_confusion_fair = plot_confusion_matrix(nn_model_fair, X_white, y_white, "White Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-nnb_confusion_fair = plot_confusion_matrix(nn_model_fair, X_black, y_black, "Black Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
-nno_confusion_fair = plot_confusion_matrix(nn_model_fair, X_other, y_other, "Other Confusion NN Fair", dir_path='src/DataScientist/confusion_matrix/', plot=True, vmax=None)
+dtw_confusion_fair = plot_confusion_matrix(dt_model_fair, X_white, y_white, "White Confusion DT Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+dtb_confusion_fair = plot_confusion_matrix(dt_model_fair, X_black, y_black, "Black Confusion DT Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+dto_confusion_fair = plot_confusion_matrix(dt_model_fair, X_other, y_other, "Other Confusion DT Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+nnw_confusion_fair = plot_confusion_matrix(nn_model_fair, X_white, y_white, "White Confusion NN Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+nnb_confusion_fair = plot_confusion_matrix(nn_model_fair, X_black, y_black, "Black Confusion NN Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
+nno_confusion_fair = plot_confusion_matrix(nn_model_fair, X_other, y_other, "Other Confusion NN Fair", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
 
 
 #%% Checking for nul hypothesis - Is there significant difference in accuracy between the original and the fair model?

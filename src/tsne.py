@@ -274,16 +274,31 @@ for layer in layers:
     # plt.show()
     plt.close()
 
+    # --- True labels ---
+    _, ax = plt.subplots(figsize=(8, 5))
+    ax.set_title(f"t-SNE Visualization of Hidden {layername}\nTrue Label")
+    for true_class in np.unique(y_test.values):
+        mask = y_test.values == true_class
+        ax.scatter(layer[:, 0][mask], layer[:, 1][mask],
+                   label=str(true_class).strip(), alpha=point_alpha, edgecolors="w")
+    ax.legend()
+    ax.set_xlabel("t-SNE 1")
+    ax.set_ylabel("t-SNE 2")
+    plt.tight_layout()
+    plt.savefig(f"tsne/{layername}/true_labels")
+    # plt.show()
+    plt.close()
+
     # --- Classifications ---
     _, ax = plt.subplots(figsize=(8, 5))
-    ax.set_title(f"t-SNE Visualization of Hidden {layername}\n Classifications")
+    ax.set_title(f"t-SNE Visualization of Hidden {layername}\nPredicted Label")
     total_obs = 0
     for prediction_class in np.unique(mlp_classifications):
         print(prediction_class)
         x = layer[:, 0][mlp_classifications == prediction_class]
         y = layer[:, 1][mlp_classifications == prediction_class]
         total_obs += len(x)
-        ax.scatter(x, y, label=prediction_class, alpha=point_alpha, edgecolors="w")
+        ax.scatter(x, y, label=str(prediction_class).strip(), alpha=point_alpha, edgecolors="w")
     ax.legend()
     ax.set_xlabel("t-SNE 1")
     ax.set_ylabel("t-SNE 2")
