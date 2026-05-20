@@ -33,6 +33,8 @@ X_male, y_male = X_test[male_mask].copy(), y_test[male_mask]
 X_female, y_female = X_test[female_mask].copy(), y_test[female_mask]
 
 
+nn_confusion = plot_confusion_matrix(nn_model, X_test, y_test, "Confusion Matrix NN", dir_path='src/DataScientist/', plot=True, vmax=None)
+dt_confusion = plot_confusion_matrix(dt_model, X_test, y_test, "Confusion Matrix DT", dir_path='src/DataScientist/', plot=True, vmax=None)
 
 # Confusion Matrix - Decision Tree
 dtf_confusion = plot_confusion_matrix(dt_model, X_female, y_female, "Female Confusion DT", dir_path= 'work/XAI_Assignment_2/Billeder/confusion_matrix/', plot=True, vmax=None)
