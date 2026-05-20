@@ -3300,8 +3300,6 @@
 19, Private, 40425, Some-college, 10, Never-married, Sales, Not-in-family, White, Female, 0, 0, 28, United-States, <=50K
 31, Private, 189461, Assoc-acdm, 12, Divorced, Adm-clerical, Unmarried, White, Female, 0, 0, 41, United-States, <=50K
 53, Private, 200576, 11th, 7, Divorced, Craft-repair, Other-relative, White, Female, 0, 0, 40, United-States, <=50K
-61, Private, 92691, HS-grad, 9, Married-civ-spouse, Adm-clerical, Husband, White, Male, 0, 0, 3, United-States, <=50K
-47, Private, 664821, Bachelors, 13, Married-civ-spouse, Other-service, Husband, White, Male, 0, 0, 40, El-Salvador, <=50K
 37, Private, 175130, HS-grad, 9, Divorced, Adm-clerical, Unmarried, White, Female, 0, 0, 45, United-States, <=50K
 50, Self-emp-not-inc, 391016, Bachelors, 13, Divorced, Exec-managerial, Not-in-family, White, Male, 0, 0, 30, United-States, <=50K
 27, Private, 249315, Some-college, 10, Never-married, Sales, Not-in-family, White, Male, 0, 0, 44, United-States, <=50K

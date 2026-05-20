@@ -530,14 +530,8 @@ if __name__ == '__main__':
         ('MLP', model_MLP(cat_cols_fair, num_cols_fair)),
     ]
 
-    PROFILE_FILTERS = [
-        # User 1: low-hours private worker, HS grad
-        lambda Xt, rej, pr: (
-            rej & (pr < 0.35) & (Xt['hours-pr-week'] < 40)
-            & (Xt['workclass'].str.strip() == 'Private')
-            & (Xt['education'].str.strip() == 'HS-grad')
-        )
-    ]
+    # ── Select users by position in X_test (0-based) ─────────────────────────
+    USER_IDS = [3302]
 
     # Fit all models, then build job list
     jobs = []
@@ -546,16 +540,10 @@ if __name__ == '__main__':
         fit_and_score(model, X_train, y_train, X_test, y_test)
         out_dir = OUTPUT_DIR + model_name + '/'
         os.makedirs(out_dir, exist_ok=True)
-        approved_idx = list(model.named_steps['clf'].classes_).index(APPROVED_LABEL)
-        probs    = model.predict_proba(X_test)[:, approved_idx]
-        rejected = model.predict(X_test) != APPROVED_LABEL
-        for user_num, pf in enumerate(PROFILE_FILTERS, start=1):
-            mask = pf(X_test, rejected, probs)
-            pool = X_test[mask]
-            if pool.empty:
-                print(f'  User {user_num}: no matching sample, skipping.')
-                continue
-            jobs.append((model_name, model, pool.iloc[0], X_train, user_num, out_dir))
+        for user_id in USER_IDS:
+            sample = X.loc[user_id]
+            bg = X_train.drop(index=user_id, errors='ignore')
+            jobs.append((model_name, model, sample, bg, user_id, out_dir))
 
     # Run all (model, user) jobs in parallel
     print(f'\nRunning {len(jobs)} jobs in parallel...')
